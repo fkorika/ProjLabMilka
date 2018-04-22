@@ -1,17 +1,14 @@
+import java.io.FileWriter;
+import java.io.IOException;
 
-public class Hole extends Field{
- 
-	public boolean wantsToMoveHere(Direction d, Movable m){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "Movable";
+public class Hole extends Field {
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
+	public boolean wantsToMoveHere(Direction d, Movable m) {
 		return true;
 	}
+
+	public void printField(FileWriter output) throws IOException {
+		output.write('H');
+	}
+
 }

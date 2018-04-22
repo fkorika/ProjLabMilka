@@ -1,44 +1,59 @@
+import java.io.FileWriter;
+import java.io.IOException;
 
-public class SwitchableHole extends Hole{
+public class SwitchableHole extends Hole {
 
 	private Switch _switch;
-	
-	public void activate(){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "",
-                param2Name = "";
+	private boolean state;
+	private int number;
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
+	public int getNumber() {
+		return number;
 	}
-	public void deactivate(){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "",
-                param2Name = "";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
+	public SwitchableHole(int n) {
+		number = n;
+		state = false;
 	}
-	
-	public boolean wantsToMoveHere(Direction d, Movable m){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "Movable";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
-		return true;
+	public void setSwitch(Switch s) {
+		_switch = s;
+	}
+
+	public Switch getSwitch() {
+		return _switch;
+	}
+
+	public boolean getState() {
+		return state;
+	}
+
+	public void setState(boolean b) {
+		state = b;
+	}
+
+	public void activate() {
+		state = true;
+		if (isOccupied()) {
+			movable.die();
+			movable.setField(null);
+			movable = null;
+		}
+	}
+
+	public void deactivate() {
+		state = false;
+	}
+
+	public boolean wantsToMoveHere(Direction d, Movable m) {
+		if (state)
+			return true;
+		else
+			return super.wantsToMoveHere(d, m);
+	}
+
+	public void printField(FileWriter output) throws IOException {
+		output.write('K');
+		output.write(number);
 	}
 }

@@ -1,32 +1,34 @@
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Crate extends Movable {
 
-	private Warehouse warehouse;
+	Warehouse warehouse;
+
+	public Crate(Field f, Warehouse w) {
+		field = f;
+		f.setMovable(this);
+		warehouse = w;
+		warehouse.addCrate(this);
+	}
 
 	public void die() {
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "",
-                param2Name = "";
-
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
-	//	warehouse.deleteCrate(this);
+		warehouse.deleteCrate(this);
 	}
-	
-	public void setField(Field f) {
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Field",
-                param2Name = "";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
+	public void setField(Field f) {
 		field = f;
+	}
+
+	public Field getField() {
+		return field;
+	}
+
+	public void printMovable(FileWriter output) throws IOException {
+		output.write('C');
+	}
+
+	public boolean isCrate() {
+		return true;
 	}
 }

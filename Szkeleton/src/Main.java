@@ -1,648 +1,173 @@
-import java.util.Scanner;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Main {
 
-    public static int callNumber; //Számolja, hogy milyen 'mélyen' járunk a függvényhívásokban.
-    //Minden hívás elõtt növelni kell, ha közvetlen utána pedig csökkenteni.
+	public static void main(String[] args) throws Exception {
+		Warehouse warehouse = new Warehouse();
+		char inputchar;
+		Color color;
 
-    public static void main(String[] args) {
+		File f = new File("map.txt");
+		FileReader input = new FileReader(f);
 
-        while(true) {
+		Field actualField;
 
-        //Változók inicializálása.
-       callNumber = 0;
-      Field f1 = new Field();
-      Field f2 = new Field();
-      Field f3 = new Field();
-      Field f4 = new Field();
-      Crate c1 = new Crate();
-      Crate c2 = new Crate();
-      Worker w = new Worker();
-      Worker w2 = new Worker();
-      Pallet p = new Pallet();
-      SwitchableHole sh = new SwitchableHole();
-      Switch s = new Switch();
-      Hole h = new Hole();
-      NotSteppable ns = new NotSteppable();
-      
-        //Use-case választás.
-        //szöveg
-        System.out.println("1 - Láda lyukba esik\n2 - Láda ládát tol\n3 - Láda embert tol(nem hal meg)\n"
-        		+ "4 - Láda embert tol(meghal)\n5 - Láda embert tol raklapra(meghal)\n6- Kapcsolható lyuk deaktiválása\n"
-        		+ "7 - Kapcsoló aktiválás\n8 - Kapcsolható lyukon állás közbeni halál(Worker)\n"
-        		+ "9 - Kapcsoló lyukon állás közbeni halál(Crate)\n10 - Ládatolás(mehet)\n11 - Dolgozó lyukba mozog(meghal)\n"
-        		+ "12 - Dolgozo mozog(sikeres)\n13 - Dolgozó mozog(fal,nem sikerül)\n14 - Dolgozó mozog(dolgozó->dolgozó,sikertelen)\n"
-        		+ "15 - Dolgozó ládát mozgat(Sikeres)\n16 - Dolgozó ládát mozgat(Sikertelen)\n"
-        		+ "Adja meg a válaszott Use-case számát");
-        //beolvasás
-        Scanner reader = new Scanner(System.in);
-        int input = reader.nextInt();
-        //{Kiírod, hogy mik a lehetõségek, a számuk, és beolvasod a választást. Minden use-case egy case a switchben.
-        // Kell még egy eset, hogy ha nem megfelelõ a bemenet.}
-        //SWITCH-CASE-el megvalósított use-case választás.
-        //KIEGÉSZÍTVE A LEGUTOLSÓ BEADOTT DOKSINKBAN, HOGY AZ ADOTT SZEKVENCIÁK HOL VANNAK
-        switch(input) {
-        //11. oldal
-        case 1:
-        	//Láda lyukba esik
-        	
-        	
-        	callNumber++;
-            h.wantsToMoveHere(Direction.left, c1);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            c1.die();
-            callNumber--;
-            callNumber--;
-        	break;
-        
-        case 2:
-        	//Láda ládát tol
-        	callNumber++;
-            f4.wantsToMoveHere(Direction.right, c1);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.getMovable();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.someoneMovesHere(Direction.right, c1, c2);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.getNeighbor(Direction.right);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f4.wantsToMoveHere(Direction.right, c2);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f4.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            c2.setField(f4);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f4.setMovable(c2);
-            callNumber--;
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.setMovable(c1);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            c1.setField(f3);
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            break;
-            
-        	
-        case 3:
-        	// Láda embert tol(nem hal meg)
-        	callNumber++;
-        	f1.wantsToMoveHere(Direction.left, c2);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.wantsToMoveHere(Direction.left, c1);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.getMovable();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.getNeighbor(Direction.left);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.wantsToMoveHere(Direction.left, w);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.setField(f3);
-            callNumber--;
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.setMovable(c1);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            c1.setField(f2);
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            break;
-        	
-        	
-        	
-        case 4:
-        	// Láda embert tol(meghal)
-        	callNumber++;
-        	f1.wantsToMoveHere(Direction.left, c2);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.wantsToMoveHere(Direction.left, c1);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.getMovable();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.someoneMovesHere(Direction.left, c1, w);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.setBeingPushed(true);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.getNeighbor(Direction.left);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.wantsToMoveHere(Direction.left, w);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.getMovable();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.someoneMovesHere(Direction.left, w, c2);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.isBeingPushed();
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.die();
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            
-        	break;
-        case 5:
-        	//Láda embert tol raklapra(meghal)
-        	callNumber++;
-        	f1.wantsToMoveHere(Direction.left, c2);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.wantsToMoveHere(Direction.left, c1);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.getMovable();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.someoneMovesHere(Direction.left, c1, w);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.setBeingPushed(true);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f2.getNeighbor(Direction.left);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            p.wantsToMoveHere(Direction.left, w);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            p.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            p.getMovable();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            p.someoneMovesHere(Direction.left, w, c2);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.isBeingPushed();
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.die();
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            callNumber--;
-        	break;
-        	
-        case 6:
-        
-        	//Kapcsolható lyuk deaktiválása
-            callNumber++;
-            w.move(Direction.right);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.getField();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f1.wantsToMoveFrom(Direction.right);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f1.getNeighbor(Direction.right);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            s.wantsToMoveHere(Direction.right, w);
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            s.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            s.getMovable();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-        	s.someoneMovesHere(Direction.right, w, c1);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            s.getNeighbor(Direction.right);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            f3.wantsToMoveHere(Direction.right, c1);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            sh.deactivate();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            s.setMovable(w);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            w.setField(s);
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            callNumber--;
-            break;
-            
-            
-        case 7:
-        	//Kapcsoló aktiválás
-            callNumber++;
-            s.wantsToMoveHere(Direction.left, c1); 
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            s.isOccupied();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            s.setMovable(c1);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            c1.setField(s);
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            s.getSwitchable();
-            callNumber--;
-            for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-            callNumber++;
-            sh.activate();
-            callNumber--;
-            callNumber--;	
-        	
-            break;
-        case 8:
-        	//Kapcsolható lyukon állás közbeni halál(Worker)
-        	callNumber++;
-        	sh.activate();
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	sh.isOccupied();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.die();
-        	callNumber--;
-            callNumber--;
-        	
-            break;
-        case 9:
-        	//Kapcsolható lyukon állás közbeni halál(Crate)
-        	callNumber++;
-        	sh.activate();
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	sh.isOccupied();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	c1.die();
-        	callNumber--;
-            callNumber--;
-            break;
-        case 10:
-        	//ládatolás(mehet)
-        	callNumber++;
-        	f3.wantsToMoveHere(Direction.right, c1);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f3.isOccupied();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f3.setMovable(c1);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	c1.setField(f3);
-        	callNumber--;
-        	callNumber--;
-        	break;
-        	
-        	
-        case 11:
-        	//Dolgozó lyukba mozog(meghal)
-        	
-        	callNumber++;
-        	w.move(Direction.down);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.getField();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.wantsToMoveFrom(Direction.down);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.getNeighbor(Direction.down);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	h.wantsToMoveHere(Direction.down, w);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.die();
-        	callNumber--;
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.setMovable(null);
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	break;
-        	
-        	
-        case 12:
-        	//Dolgozo mozog(sikeres)
-        	
-        	callNumber++;
-        	w.move(Direction.right);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.getField();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.wantsToMoveFrom(Direction.right);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.getNeighbor(Direction.right);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.wantsToMoveHere(Direction.right, w);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.isOccupied();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.setMovable(w);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.setField(f2);
-        	callNumber--;
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.setMovable(null);
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	break;
-        	
-        case 13:
-        	//Dolgozó mozog(fal,nem sikerül)
-        	callNumber++;
-        	w.move(Direction.right);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.getField();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.wantsToMoveFrom(Direction.right);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.getNeighbor(Direction.right);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	ns.wantsToMoveHere(Direction.right, w);
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	break;
-        
-        case 14:
-        	//Dolgozó mozog(dolgozó->dolgozó,sikertelen)
-        	callNumber++;
-        	w.move(Direction.up);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.getField();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.wantsToMoveFrom(Direction.up);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.getNeighbor(Direction.up);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.wantsToMoveHere(Direction.up, w);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.isOccupied();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.getMovable();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.someoneMovesHere(Direction.up, w, w2);
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	break;
-        	
-        case 15:
-        	//Dolgozó ládát mozgat(Sikertelen)
-        	callNumber++;
-        	w.move(Direction.down);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.getField();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.wantsToMoveFrom(Direction.down);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.getNeighbor(Direction.down);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.wantsToMoveHere(Direction.down, w);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.isOccupied();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.getMovable();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.someoneMovesHere(Direction.down, w, c1);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.isBeingPushed();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.getNeighbor(Direction.down);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f3.wantsToMoveHere(Direction.down, c1);
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	break;
-        	
-        case 16:
-        	//Dolgozó ládát mozgat(Sikeres)
-        	callNumber++;
-        	w.move(Direction.up);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.getField();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.wantsToMoveFrom(Direction.up);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.getNeighbor(Direction.up);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.wantsToMoveHere(Direction.up, w);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.isOccupied();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.getMovable();
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.someoneMovesHere(Direction.up, w, c1);
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.getNeighbor(Direction.up);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f3.wantsToMoveHere(Direction.up, c1);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f2.setMovable(w);
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	w.setField(f2);
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	for (int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        	callNumber++;
-        	f1.setMovable(null);
-        	callNumber--;
-        	callNumber--;
-        	callNumber--;
-        	
-        	break;
-        	
-        default:
-        	System.out.println("Érvénytelen szám");
-        //A use-case-hez szükséges változók inicialízálása
-    //    Write w = new Write();
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 12; j++) {
+				inputchar = (char) input.read();
+				inputchar = (char) input.read();
+				switch (inputchar) {
+				case 'H':
+					warehouse.setField(i, j, new Hole());
+					break;
+				case 'F':
+					warehouse.setField(i, j, new Field());
+					break;
+				case 'S':
+					warehouse.setField(i, j, new Switch(input.read()));
+					break;
+				case 'N':
+					warehouse.setField(i, j, new NotSteppable());
+					break;
+				case 'K':
+					warehouse.setField(i, j, new SwitchableHole(input.read()));
+					break;
+				case 'P':
+					inputchar = (char) input.read();
+					inputchar = (char) input.read();
+					if (inputchar == 'B')
+						warehouse.setField(i, j, new Pallet(Color.blue, warehouse));
+					else
+						warehouse.setField(i, j, new Pallet(Color.red, warehouse));
+					break;
 
-        //Maga a use-case
-        /*
-        for(int i = 0; i < Main.callNumber; i++) System.out.print("---");
-        System.out.print("Object of class: ");
-        Main.callNumber++;
-        w.foo();
-        Main.callNumber--;
+				default:
+					break;
+				}
 
-        Main.callNumber++;
-        w.foo();
-        Main.callNumber--;
-         */
-        //}
-        }
-        }
-    }
+				inputchar = (char) input.read();
+				inputchar = (char) input.read();
+				actualField = warehouse.getField(i, j);
+
+				switch (inputchar) {
+				case 'H':
+					actualField.setSurface(new Honey(actualField));
+					inputchar = (char) input.read();
+					break;
+				case 'O':
+					actualField.setSurface(new Oil(actualField));
+					break;
+				case 'X':
+					actualField.setSurface(new Surface(actualField));
+					break;
+				default:
+					break;
+				}
+
+				inputchar = (char) input.read();
+				inputchar = (char) input.read();
+				switch (inputchar) {
+				case 'W':
+					inputchar = (char) input.read();
+					inputchar = (char) input.read();
+					if (inputchar == 'B')
+						color = Color.blue;
+					else
+						color = Color.red;
+					actualField.setMovable(new Worker(actualField, color, warehouse));
+					break;
+				case 'C':
+					actualField.setMovable(new Crate(actualField, warehouse));
+					break;
+				default:
+					break;
+				}
+				inputchar = (char) input.read();
+			}
+			inputchar = (char) input.read();
+			inputchar = (char) input.read();
+		}
+		input.close();
+
+		warehouse.connectSwitches();
+		// System.out.println(warehouse.getWorker(Color.red));
+
+		// neighbors beállítása
+		for (int i = 1; i < 11; i++) {
+			for (int j = 1; j < 11; j++) {
+				actualField = warehouse.getField(i, j);
+				actualField.setNeighbors(Direction.up, warehouse.getField(i - 1, j));
+				actualField.setNeighbors(Direction.right, warehouse.getField(i, j + 1));
+				actualField.setNeighbors(Direction.down, warehouse.getField(i + 1, j));
+				actualField.setNeighbors(Direction.left, warehouse.getField(i, j - 1));
+			}
+		}
+
+		boolean exit = false;
+		while (!exit) {
+			System.out.print("Bemenet: ");
+			inputchar = (char) System.in.read();
+			switch (Character.toUpperCase(inputchar)) {
+			case 'W':
+				warehouse.getWorker(Color.red).move(Direction.up);
+				break;
+			case 'A':
+				warehouse.getWorker(Color.red).move(Direction.left);
+				break;
+			case 'S':
+				warehouse.getWorker(Color.red).move(Direction.down);
+				break;
+			case 'D':
+				warehouse.getWorker(Color.red).move(Direction.right);
+				break;
+			case 'X':
+				exit = true;
+				break;
+			default:
+				break;
+
+			}
+			inputchar = (char) System.in.read();
+			inputchar = (char) System.in.read();
+			printToTxt(warehouse);
+		}
+	}
+	// Kiírás fáljba
+
+	public static void printToTxt(Warehouse warehouse) throws IOException {
+		FileWriter output = new FileWriter("outputmap.txt");
+		Field actualField;
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 12; j++) {
+				actualField = warehouse.getField(i, j);
+				output.write('[');
+				actualField.printField(output);
+				output.write(',');
+				actualField.printSurface(output);
+				output.write(',');
+				actualField.printMovable(output);
+				output.write(']');
+			}
+			output.write('\r');
+			output.write('\n');
+		}
+		output.close();
+		BufferedReader r = new BufferedReader(new FileReader("outputmap.txt"));
+		String s = "", line = null;
+		for (int rowcount = 0; (line = r.readLine()) != null; rowcount++)
+		/* while ((line = r.readLine()) != null) */ {
+			s += rowcount + " ";
+			s += line;
+			s += '\n';
+		}
+		System.out.print(s);
+		r.close();
+	}
 }

@@ -1,149 +1,177 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
 
 public class Field {
 
 	protected Movable movable;
-	protected Field neighbors;
-	
-	
-	public Movable getMovable(){
-		Crate crate = new Crate();
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "",
-                param2Name = "";
+	protected HashMap<Direction, Field> neighbors;
+	protected Surface surface;
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
-		
-		return crate;
+	public Field() {
+		neighbors = new HashMap<Direction, Field>();
 	}
 
-	public Field getNeighbor(Direction d){
-		Field f1 = new Field();
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "";
-
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-		
-		return f1;
+	public void setSurface(Surface s) {
+		surface = s;
 	}
-	
-	public void setMovable(Movable m){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Movable",
-                param2Name = "";;
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
+	public Surface getSurface() {
+		return surface;
 	}
-	
-	public void wantsToMoveFrom(Direction d){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
+	public Movable getMovable() {
+		return movable;
 	}
-	
-	public boolean wantsToMoveHere(Direction d, Movable m){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "Movable";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
-		return true;
+	public void setMovable(Movable m) {
+		movable = m;
 	}
-	
-	public boolean isOccupied(){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "",
-                param2Name = "";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
-		return true;
+	public void setNeighbors(Direction d, Field f) {
+		neighbors.put(d, f);
 	}
-	
-	public boolean someoneMovesHere(Direction d, Crate movableWhoWantsToMoveHere, Crate movableAlreadyHere){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "Crate Crate";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-		
-		return true;
+	public Field getNeighbors(Direction d) {
+		return neighbors.get(d);
 	}
-	
-	public boolean someoneMovesHere(Direction d, Crate movableWhoWantsToMoveHere, Worker movableAlreadyHere){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "Crate Worker";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
-		return true;
+	public void wantsToMoveFrom(Direction d) {
+		Field neighborInDirection = getNeighbors(d);
+		if (neighborInDirection.wantsToMoveHere(d, movable)) {
+			setMovable(null);
+		}
 	}
-	
-	public boolean someoneMovesHere(Direction d, Worker movableWhoWantsToMoveHere, Crate movableAlreadyHere){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "Worker Crate";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
-		return true;
+	public boolean wantsToMoveHere(Direction d, Movable m) {
+		if (!isOccupied()) {
+			setMovable(m);
+			m.setField(this);
+			return true;
+		} else {
+			if (m.isCrate()) {
+				if (movable.isCrate()) {
+					if (someoneMovesHere(d, (Crate) m, (Crate) movable)) {
+						m.setField(this);
+						setMovable(m);
+						return true;
+					} else
+						return false;
+				} else {
+					if (someoneMovesHere(d, (Crate) m, (Worker) movable)) {
+						m.setField(this);
+						setMovable(m);
+						return true;
+					} else
+						return false;
+				}
+			} else {
+				if (movable.isCrate()) {
+					if (someoneMovesHere(d, (Worker) m, (Crate) movable)) {
+						m.setField(this);
+						setMovable(m);
+						return true;
+					} else
+						return false;
+				} else {
+					if (someoneMovesHere(d, (Worker) m, (Worker) movable)) {
+						m.setField(this);
+						setMovable(m);
+						return true;
+					} else
+						return false;
+				}
+			}
+		}
 	}
-	
-	public boolean someoneMovesHere(Direction d, Worker movableWhoWantsToMoveHere, Worker movableAlreadyHere){
-		
-		String objectName = this.toString().substring(this.toString().lastIndexOf('.') + 1, this.toString().lastIndexOf('@')),
-                methodName = new Object() {
-                }.getClass().getEnclosingMethod().getName(),
-                param1Name = "Direction",
-                param2Name = "Worker Worker";
 
-        System.out.println(objectName + " executing method: " + methodName + " with parameters: " +
-                param1Name + " " + param2Name);
-        
-		return true;
+	public boolean isOccupied() {
+		if (movable == null)
+			return false;
+		else
+			return true;
 	}
-	
+
+	public boolean someoneMovesHere(Direction d, Crate movableWhoWantsToMoveHere, Crate movableAlreadyHere) {
+		if (movableWhoWantsToMoveHere.getForceRemaining() == 0)
+			return false;
+		else {
+			if (!movableAlreadyHere.setForceRemaining(
+					movableWhoWantsToMoveHere.getForceRemaining() - surface.getExtraForceNeeded() - 1))
+				return false;
+			else {
+				Field neighborInDirection = getNeighbors(d);
+				if (neighborInDirection.wantsToMoveHere(d, movable)) {
+					movableWhoWantsToMoveHere.setField(this);
+					setMovable(movableWhoWantsToMoveHere);
+					return true;
+				} else
+					return false;
+			}
+		}
+	}
+
+	public boolean someoneMovesHere(Direction d, Crate movableWhoWantsToMoveHere, Worker movableAlreadyHere) {
+		if (movableWhoWantsToMoveHere.getForceRemaining() == 0)
+			return false;
+		else {
+			if (!movableAlreadyHere.setForceRemaining(
+					movableWhoWantsToMoveHere.getForceRemaining() - surface.getExtraForceNeeded() - 1))
+				return false;
+			else {
+				movableAlreadyHere.setbeingPushed(true);
+				Field neighborInDirection = getNeighbors(d);
+				if (neighborInDirection.wantsToMoveHere(d, movable)) {
+					movableWhoWantsToMoveHere.setField(this);
+					setMovable(movableWhoWantsToMoveHere);
+					return true;
+				} else {
+					movable.die();
+					movableWhoWantsToMoveHere.setField(this);
+					setMovable(movableWhoWantsToMoveHere);
+					return true;
+				}
+			}
+		}
+	}
+
+	public boolean someoneMovesHere(Direction d, Worker movableWhoWantsToMoveHere, Crate movableAlreadyHere) {
+		if (movableWhoWantsToMoveHere.isBeingPushed())
+			return false;
+		else {
+			if (!movableAlreadyHere
+					.setForceRemaining(movableWhoWantsToMoveHere.getStrength() - surface.getExtraForceNeeded() - 1))
+				return false;
+			else {
+				Field neighborInDirection = getNeighbors(d);
+				if (neighborInDirection.wantsToMoveHere(d, movable)) {
+					movableWhoWantsToMoveHere.setField(this);
+					setMovable(movableWhoWantsToMoveHere);
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+	}
+
+	public boolean someoneMovesHere(Direction d, Worker movableWhoWantsToMoveHere, Worker movableAlreadyHere) {
+		return false;
+	}
+
+	public void printField(FileWriter output) throws IOException {
+		output.write('F');
+	}
+
+	public void printSurface(FileWriter output) throws IOException {
+		surface.printSurface(output);
+	}
+
+	public void printMovable(FileWriter output) throws IOException {
+		if (movable == null)
+			output.write('X');
+		else
+			movable.printMovable(output);
+	}
+
 }
