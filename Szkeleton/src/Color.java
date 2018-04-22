@@ -1,5 +1,6 @@
 
 public enum Color {
 	red,
-	blue
+	blue,
+    green
 }
